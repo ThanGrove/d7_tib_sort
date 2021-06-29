@@ -1,0 +1,46 @@
+<?php
+
+function tibarmy_sort_install() {
+  // Check that our field is not already created.
+  if (!field_info_field(TIB_SORT_FIELD_NAME)) {
+
+    // Create the field base.
+    $field = array(
+      'field_name' => TIB_SORT_FIELD_NAME,
+      'type' => 'text',
+    );
+
+    try {
+      field_create_field($field);
+
+      // Create the field instance on the bundle.
+      $instance = array(
+        'field_name' => TIB_SORT_FIELD_NAME,
+        'entity_type' => 'node',
+        'label' => TIB_SORT_FIELD_LABEL,
+        'bundle' => 'notice',
+        // If you don't set the "required" property then the field wont be required by default.
+        'required' => FALSE,
+        'settings' => array(),
+        'widget' => array(
+          'type' => 'textfield',
+        ),
+      );
+      field_create_instance($instance);
+
+    } catch (FieldException $fe) {
+      watchdog('tibarmy_sort module', "Field exception thrown in creating the '".
+        TIB_SORT_FIELD_NAME . "' field: " . $fe->getMessage());
+    }
+  }
+}
+
+function tibarmy_sort_uninstall() {
+  $fldname = 'field_tibsortval';
+  $instance = field_info_instance('node', $fldname, 'notice');
+  if($instance) {
+    field_delete_instance($instance);
+  } else {
+    watchdog('tibarmy sort module', "Could not find field defintion to delete: " . $fldname);
+  }
+}
