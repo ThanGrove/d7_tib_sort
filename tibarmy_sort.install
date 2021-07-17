@@ -1,7 +1,6 @@
 <?php
 
 function tibarmy_sort_install() {
-  module_load_include('inc', 'tibarmy_sort', 'tibarmy_sort');
 
   // Check that our field is not already created.
   if (!field_info_field(TIB_SORT_FIELD_NAME)) {
@@ -30,6 +29,8 @@ function tibarmy_sort_install() {
       );
       field_create_instance($instance);
 
+      drupal_set_installed_schema_version('mymodule', '7000');
+
     } catch (FieldException $fe) {
       watchdog('tibarmy_sort module', "Field exception thrown in creating the '".
         TIB_SORT_FIELD_NAME . "' field: " . $fe->getMessage());
@@ -50,8 +51,9 @@ function tibarmy_sort_uninstall() {
 /**
  * Add Tibetan sort field values to existing nodes for the Notice content type by invoking hook_presave
  */
-function tibarmy_sort_update_7000(&$sandbox) {
+function tibarmy_sort_update_7001(&$sandbox) {
 
+  module_load_include('inc', 'tibarmy_sort', 'tibarmy_sort');
   if (!isset($sandbox['progress'])) {
     $sandbox['progress'] = 0;
     $sandbox['current_uid'] = 0;
