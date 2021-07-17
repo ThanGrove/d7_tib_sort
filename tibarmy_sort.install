@@ -1,5 +1,9 @@
 <?php
 
+// If this value is changed, must change also in tibarmy_sort.inc
+const TIB_SORT_FIELD_NAME = 'field_tibsortval';
+const TIB_SORT_FIELD_LABEL = 'Tibetan Sort Value';
+
 function tibarmy_sort_install() {
 
   // Check that our field is not already created.
@@ -39,45 +43,10 @@ function tibarmy_sort_install() {
 }
 
 function tibarmy_sort_uninstall() {
-  $fldname = 'field_tibsortval';
-  $instance = field_info_instance('node', $fldname, 'notice');
+  $instance = field_info_instance('node', TIB_SORT_FIELD_NAME, 'notice');
   if($instance) {
     field_delete_instance($instance);
   } else {
-    watchdog('tibarmy sort module', "Could not find field defintion to delete: " . $fldname);
+    watchdog('tibarmy sort module', "Could not find field defintion to delete: " . TIB_SORT_FIELD_NAME);
   }
-}
-
-/**
- * Add Tibetan sort field values to existing nodes for the Notice content type by invoking hook_presave
- */
-function tibarmy_sort_update_7001(&$sandbox) {
-
-  module_load_include('inc', 'tibarmy_sort', 'tibarmy_sort');
-  if (!isset($sandbox['progress'])) {
-    $sandbox['progress'] = 0;
-    $sandbox['current_uid'] = 0;
-    // We'll -1 to disregard the uid 0...
-    $sandbox['max'] = db_query('SELECT COUNT(nid) FROM {node} WHERE type=:mytype', array(':mytype' => 'notice'))->fetchField();
-  }
-
-  $limit = 10;
-
-  $query = db_select('node', 'n')
-    ->fields('n', array('nid'))
-    ->condition('type', 'notice')
-    ->range($sandbox['progress'], $limit)
-    ->orderBy('nid', 'ASC')
-    ->execute();
-  $nids = $query->fetchCol('nid');
-
-  foreach ($nids as $nid) {
-    $node = node_load($nid);
-    tibarmy_sort_field_add($node);
-    node_save($node);
-    $sandbox['progress']++;
-    $sandbox['current_nid'] = $node->nid;
-  }
-
-  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
 }
