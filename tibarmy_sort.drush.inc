@@ -2,54 +2,34 @@
 
 /**
  * Implements hook_drush_command().
- * Set up the kmaps field reindexing drush command as "drush ikf"
+ * Set up Tibetan sort field update drush command as "drush utsf"
  */
 function tibarmy_sort_drush_command() {
 
-  $commands['update-tib-sort-fields'] = [
-    'description' => 'A drush command to update all tib sort fields by saving all notice items',
+  $commands['update-sort-fields'] = [
+    'description' => 'A drush command to add/update all tib sort fields by saving all notice items',
     'aliases' => ['utsf'],
     'examples' => [
-      'drush utsf' => 'Update all tib sort fields',
+      'drush utsf' => 'Update all tib sort fields for notices',
     ],
   ];
 
-  $commands['index-collection'] = [
-    'description' => "A drush command to index all items in a collection",
-    'aliases' => ['kmfic'],
-    'argument' => [
-      'collid' => 'The node ID for the collection to index',
-    ],
-    'examples' => [
-      'drush kmfic 3' => 'Index collection with node ID of 3 on this site',
-    ],
-  ];
-  $site_type = (function_exists('shanti_general_get_site_type')) ?  shanti_general_get_site_type() : 'unknown';
-  $commands['delete-all-records'] = [
-    'description' => "A drush command to delete all SOLR records for this site, $site_type",
-    'aliases' => ['kmfd'],
-    'examples' => [
-      'drush kmfd' => 'Returns the current sites name',
-    ],
-  ];
   return $commands;
 }
 
 /**
- * Drush Index Kmaps Fields command
- * Call the batch fucntion for indexing all kmaps with a value of TRUE for $is_drush
+ * Drush Update Tib Sort Fields
+ * Populate the tib sort field for every notice node with a value that sorts by the standard methods
  *
- * @param int $start_ind
  */
-function drush_update_tib_sort_fields() {
+function drush_tibarmy_sort_update_sort_fields() {
   $node_type = 'notice';
   $result = db_query("SELECT nid FROM node WHERE type = :type", array(':type' => $node_type));
   $nids = $result->fetchCol();
-  // Need to fix up this
 
   $totalct = count($nids);
   if ($totalct == 0) {
-    drush_print("Warning: There are no items in this collection. Nothing indexed!");
+    drush_print("Warning: There are no notice nodes to update!");
     return;
   }
 
@@ -58,14 +38,15 @@ function drush_update_tib_sort_fields() {
   $chunks = array_chunk($nids, 100);
   foreach($chunks as $chunk) {
     foreach($chunk as $itemid) {
-      _shanti_kmaps_fields_push_solr_doc($itemid);
+      $node = node_load($itemid);
+      node_save($node);  // The Tib Sort value is added by the hook_presave() function in tibarmy_sort.module
     }
     $done += count($chunk);
     if ($done % 100 == 0) {
-      drush_print("   Indexed $done out of $totalct nodes...");
+      drush_print("   Updated $done out of $totalct notices ...");
     }
   }
-  drush_print("All nodes in collection $cid have been reindexed!");
+  drush_print("All notice nodes have been updated!");
 }
 
 
