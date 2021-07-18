@@ -43,10 +43,7 @@ function tibarmy_sort_install() {
 }
 
 function tibarmy_sort_uninstall() {
-  $instance = field_info_instance('node', TIB_SORT_FIELD_NAME, 'notice');
-  if($instance) {
-    field_delete_instance($instance);
-  } else {
-    watchdog('tibarmy sort module', "Could not find field defintion to delete: " . TIB_SORT_FIELD_NAME);
-  }
+  field_delete_field(TIB_SORT_FIELD_NAME);
+  field_purge_batch(10);
+  watchdog('tibarmy sort uninstall', "Deleted field: " . TIB_SORT_FIELD_NAME);
 }
