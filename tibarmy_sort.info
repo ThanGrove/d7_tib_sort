@@ -3,3 +3,5 @@ description = A module for sorting nodes by Tibetan text field
 core = 7.x
 package = Tibarmy
 version = 7.x-1.0-beta1
+
+scripts[] = tibarmy_sort.js
