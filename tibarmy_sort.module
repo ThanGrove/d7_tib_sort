@@ -21,11 +21,13 @@ function tibarmy_sort_node_presave($node) {
 function tibarmy_sort_field_add(&$node) {
   // watchdog('tibarmy_sort', "adding tib sort field from inc");
   if ($node->type != 'notice') { return; }
-  $tibtitle = $node->title;
+  $tibtitle = rtrim($node->title);
   // If not Tibetan, does nothing. Is this what we want? Or should the string itself get added to the Tib sort?
   if (!contains_tibetan($tibtitle)) {
     return;
   }
+  $last_char = substr($tibtitle, -1);
+
   #split key by word
   $wordArray=mb_split("་", $tibtitle);
   $reordVal="";
@@ -74,5 +76,3 @@ function tib_char_split($txt) {
   }
   return $chars;
 }
-
-
