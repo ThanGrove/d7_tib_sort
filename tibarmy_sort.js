@@ -40,6 +40,9 @@
           var srchstr = $('#edit-keyword-solr').val();
           // Call function to ensure shad
           srchstr = ensureShay(srchstr);  // Function above
+          if (srchstr.charAt(0) !== '"' && srchstr.indexOf(' ') > -1) {
+            srchstr = srchstr.replace(' ', '+');
+          }
           // Replace with new value
           $('#edit-keyword-solr').val(srchstr);
         });
