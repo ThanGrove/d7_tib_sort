@@ -54,6 +54,9 @@
             // ensure shad
             var srchstr = $(e.target).val();
             srchstr = ensureShay(srchstr);
+            if (srchstr.charAt(0) !== '"' && srchstr.indexOf(' ') > -1) {
+              srchstr = srchstr.replace(' ', '+');
+            }
             $('#edit-keyword-solr').val(srchstr);
           }
         });
