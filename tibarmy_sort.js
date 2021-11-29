@@ -41,7 +41,7 @@
           // Call function to ensure shad
           srchstr = ensureShay(srchstr);  // Function above
           if (srchstr.charAt(0) !== '"' && srchstr.indexOf(' ') > -1) {
-            srchstr = srchstr.replace(' ', '+');
+            srchstr = srchstr.replace(/ /g, '+');
           }
           // Replace with new value
           $('#edit-keyword-solr').val(srchstr);
@@ -55,7 +55,7 @@
             var srchstr = $(e.target).val();
             srchstr = ensureShay(srchstr);
             if (srchstr.charAt(0) !== '"' && srchstr.indexOf(' ') > -1) {
-              srchstr = srchstr.replace(' ', '+');
+              srchstr = srchstr.replace(/ /g, '+');
             }
             $('#edit-keyword-solr').val(srchstr);
           }
