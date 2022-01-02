@@ -48,7 +48,7 @@
         });
 
         // On search results page, need to use key up to validate input
-        $('body.page-solr-search #edit-keyword-solr').on('keyup', function(e) {
+        $('body.page-solr-search #edit-keyword-solr').on('keyup', function (e) {
           // When enter is pressed ...
           if (e.which === 13) {
             // ensure shad
@@ -60,9 +60,23 @@
             $('#edit-keyword-solr').val(srchstr);
           }
         });
-      }
 
+        // Enable the remove search string minus icon on search page
+        if ($('body.page-solr-search .current-search-item-active-items li.first a').length > 0) {
+          var firsthref = $('body.page-solr-search .current-search-item-active-items li.first a').attr('href');
+          var hrefpts = firsthref.split('?keyword_solr=');
+          if (hrefpts?.length > 1) {
+            var sstr = hrefpts[1];
+            var sstrpts = sstr.split('&');
+            sstrpts.shift();
+            var newhref = hrefpts[0];
+            if (sstrpts.length > 0) {
+              newhref += '?' + sstrpts.join('&');
+            }
+            $('body.page-solr-search .current-search-item-active-items li.first a').attr('href', newhref);
+          }
+        }
+      }
     }
   }
-
 }(jQuery));
